@@ -103,7 +103,7 @@ CH.SetupItem("stagetitle", "S4HUD", function(v, p, tics, endtic)
 	
 	-- ACT NUMBER
 	if mh then
-		if mh.bonustype > 0 then
+		if mh.bonustype == 1 and mh.bonustype == 2 then
 			local actX = (348*resConv * 2) - 348*resConv / 5 * zoneTics
 			local actTextY = 196*resConv
 			local actTextScale = FixedMul(resConv, 55*FU/100)
