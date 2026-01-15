@@ -5,6 +5,28 @@
 
 local CH = customhud
 
+--- returns if the main hud should be displayed or not.
+---@return boolean
+local function useHUD()
+	if gamemap >= sstage_start
+	and gamemap <= sstage_end then
+		return false
+	end
+
+	if gamemap >= smpstage_start
+	and gamemap <= smpstage_end then
+		return false
+	end
+
+	if mapheaderinfo[gamemap]
+	and (mapheaderinfo[gamemap].typeoflevel & TOL_NIGHTS) then
+		return false
+	end
+
+	return true
+end
+
+---@param stplyr player_t
 local function getLives(stplyr)
 	if stplyr == nil then return end
 
@@ -59,6 +81,8 @@ CH.SetupFont("S4TIM", 2) -- TIM = Time
 -- RING COUNTER
 local noRingTime = TICRATE/2
 CH.SetupItem("rings", "S4HUD", function(v, p)
+	if not useHUD() then return end
+
 	local flags = V_SNAPTOTOP|V_SNAPTOLEFT|V_PERPLAYER|V_HUDTRANS
 	v.drawScaled(57*resConv, 40*resConv, resConv/2, v.cachePatch("S4E1RING"), flags)
 	
@@ -77,6 +101,8 @@ local lifeIcon = {
 	scale = FU
 }
 CH.SetupItem("lives", "S4HUD", function(v, p)
+	if not useHUD() then return end
+
 	local flags = V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_PERPLAYER|V_HUDTRANS
 	
 	local skin = skins[p.skin]
@@ -112,6 +138,8 @@ end)
 
 -- SCORE
 CH.SetupItem("score", "S4HUD", function(v, p)
+	if not useHUD() then return end
+
 	local flags = V_SNAPTOTOP|V_SNAPTOLEFT|V_PERPLAYER|V_HUDTRANS
 	
 	v.drawScaled(111*resConv, 49*resConv, resConv/2, v.cachePatch("S4E1SCOREBG"), flags)
@@ -120,6 +148,8 @@ end)
 
 -- TIME
 CH.SetupItem("time", "S4HUD", function(v, p)
+	if not useHUD() then return end
+	
 	local flags = V_SNAPTOTOP|V_SNAPTOLEFT|V_PERPLAYER|V_HUDTRANS
 	
 	v.drawScaled(120*resConv, 63*resConv, resConv/2, v.cachePatch("S4E1TIMEBG"), flags)

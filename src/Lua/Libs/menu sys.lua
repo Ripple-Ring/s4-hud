@@ -129,6 +129,7 @@ end
 CH.SetupItem("s4-titlemenu", "S4HUD", function(v)
 	hudMenu(v, consoleplayer, type)
 end, "title")
+
 CH.SetupItem("s4-gamemenu", "S4HUD", function(v, p)
 	hudMenu(v, p, type)
 end, "game")

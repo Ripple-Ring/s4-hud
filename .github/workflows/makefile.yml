@@ -2,9 +2,16 @@ name: Makefile CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - "main"
+    paths:
+      - "src/**"
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - "main"
+    paths:
+      - "src/**"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,39 +19,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set current date as env variable # pacola if coyping from https://stackoverflow.com/questions/60942067/get-current-date-and-time-in-github-workflows was a challenge:
-      run: echo "NOW=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+      - name: do checkoutings
+        uses: actions/checkout@v4
       
-    - name: get PaK3 and the rest # now this is a fusion of the ntopp git and muder mystery git -pac
-      run: | 
-        sudo apt-get install -y nodejs
-        git clone https://github.com/UnmatchedBracket/PaK3.git
-        cd PaK3
-        npm i
+      - name: Set current date as env variable # pacola if coyping from https://stackoverflow.com/questions/60942067/get-current-date-and-time-in-github-workflows was a challenge:
+        run: echo "NOW=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+        
+      - name: get 7z
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: 7zip
+          version: build
 
-    - name: do the thing pls
-      run: |
-        mkdir build
-        node PaK3/main.js src/ build/L_S4HUD-${{ env.NOW }}.pk3
-    
-    - name: send thing to the action tab
-      uses: actions/upload-artifact@v4
-      with:
-        name: s4hud
-        path: build/L_S4HUD-${{ env.NOW }}.pk3
+      - name: do the thing pls
+        run: |
+          cd src/
+          7z a -tzip -mx=9 ../L_S4HUD-${{ env.NOW }}.pk3 .
+      
+      - name: send thing to the action tab
+        uses: actions/upload-artifact@v4
+        with:
+          name: s4hud
+          path: L_S4HUD-${{ env.NOW }}.pk3
 
-    - name: could you preetty please send the file to the discord
-      uses: sinshutu/upload-to-discord@master
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      with:
-        args: build/L_S4HUD-${{ env.NOW }}.pk3
+      - name: could you preetty please send the file to the discord
+        uses: sinshutu/upload-to-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: L_S4HUD-${{ env.NOW }}.pk3
 
-    - name: gives us the commits pleaaase
-      uses: Sniddl/discord-commits@v1.6
-      with:
-        webhook: ${{ secrets.DISCORD_WEBHOOK }}
-        template: "avatar-with-link"
-        include-extras: true
+      - name: gives us the commits pleaaase
+        uses: Sniddl/discord-commits@v1.6
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          template: "avatar-with-link"
+          include-extras: true

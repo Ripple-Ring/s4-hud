@@ -91,7 +91,7 @@ CH.SetupItem("stagetitle", "S4HUD", function(v, p, tics, endtic)
 	local str = mh and mh.lvlttl or "null"
 	if str
 	and uTics > 0 then
-		str = $:upper()
+		str = str:upper()
 		local fontX = 585*resConv / 5 * zoneTics
 		local fontY = 95*resConv
 		
@@ -102,25 +102,36 @@ CH.SetupItem("stagetitle", "S4HUD", function(v, p, tics, endtic)
 	end
 	
 	-- ACT NUMBER
-	if mh and mh.actnum ~= 0 then
-		local actX = (400*resConv * 2) - 400*resConv / 5 * zoneTics
-		local actScale = FixedMul(resConv, FU+FU/2)
-		
-		local actTextY = 194*resConv
-		local actTextScale = FixedMul(resConv, 3*FU/5) -- 0.6 in decimal
-		-- ACT shadow the hedgehog
-		v.drawScaled(actX + 6*actTextScale, actTextY + 5*actTextScale, actTextScale, v.cachePatch("EP1TTL_ACT"), V_SNAPTORIGHT|V_50TRANS|V_PERPLAYER, v.getColormap(TC_DEFAULT, 0, "AllBlack"))
-		
-		v.drawScaled(actX, actTextY, actTextScale, v.cachePatch("EP1TTL_ACT"), V_SNAPTORIGHT|V_PERPLAYER)
-		
-		-- actX = 400, + 90 = 490, which is where we want it to be :P
-		actX = $ + 90*resConv
-		local actY = 160*resConv
-		
-		-- shadow thingie
-		CH.CustomNum(v, actX + 2*actScale, actY + 2*actScale, mh.actnum, "S4ACT", 0, V_SNAPTORIGHT|V_50TRANS|V_PERPLAYER, nil, actScale, 0, "AllBlack")
-		
-		CH.CustomNum(v, actX, actY, mh.actnum, "S4ACT", 0, V_SNAPTORIGHT|V_PERPLAYER, nil, actScale)
+	if mh then
+		if mh.bonustype > 0 then
+			local actX = (348*resConv * 2) - 348*resConv / 5 * zoneTics
+			local actTextY = 196*resConv
+			local actTextScale = FixedMul(resConv, 55*FU/100)
+
+			v.drawScaled(actX + 6*actTextScale, actTextY + 5*actTextScale, actTextScale, v.cachePatch("EP1TTL_BOSS"), V_SNAPTORIGHT|V_50TRANS|V_PERPLAYER, v.getColormap(TC_DEFAULT, 0, "AllBlack"))
+
+			v.drawScaled(actX, actTextY, actTextScale, v.cachePatch("EP1TTL_BOSS"), V_SNAPTORIGHT|V_PERPLAYER)
+		elseif mh.actnum ~= 0 then
+			local actX = (400*resConv * 2) - 400*resConv / 5 * zoneTics
+			local actScale = FixedMul(resConv, FU+FU/2)
+			
+			local actTextY = 194*resConv
+			local actTextScale = FixedMul(resConv, 3*FU/5) -- 0.6 in decimal
+			
+			-- ACT shadow the hedgehog
+			v.drawScaled(actX + 6*actTextScale, actTextY + 5*actTextScale, actTextScale, v.cachePatch("EP1TTL_ACT"), V_SNAPTORIGHT|V_50TRANS|V_PERPLAYER, v.getColormap(TC_DEFAULT, 0, "AllBlack"))
+			
+			v.drawScaled(actX, actTextY, actTextScale, v.cachePatch("EP1TTL_ACT"), V_SNAPTORIGHT|V_PERPLAYER)
+			
+			-- actX = 400, + 90 = 490, which is where we want it to be :P
+			actX = $ + 90*resConv
+			local actY = 160*resConv
+			
+			-- shadow thingie
+			CH.CustomNum(v, actX + 2*actScale, actY + 2*actScale, mh.actnum, "S4ACT", 0, V_SNAPTORIGHT|V_50TRANS|V_PERPLAYER, nil, actScale, 0, "AllBlack")
+			
+			CH.CustomNum(v, actX, actY, mh.actnum, "S4ACT", 0, V_SNAPTORIGHT|V_PERPLAYER, nil, actScale)
+		end
 	end
 	
 	uTics = max($-(5 + 5), 0) -- literally the same as the other one :P
@@ -151,22 +162,14 @@ CH.SetupItem("stagetitle", "S4HUD", function(v, p, tics, endtic)
 		if subtitleTable.trans < 10 then
 			local verticalCenter = 29*subtitleTable.scale / 2
 			
-			/* laggy + i can't figure how to make it without new gfx :(
 			-- ow ie 2
-			-- did you figure out that its
-			-- only "ow ie" because of
-			-- "shadOW thingIE"?
-			local shadowTrans = subtitleTable.trans + 5
-			if shadowTrans < 10 then
-				for i = 1, 4 do
-					local num = i%2 == 0 and -1 or 1
-					local x = i <= 2 and num or 0
-					local y = i > 2 and num or 0
-					
-					CH.CustomFontString(v, subtitleTable.x + x*subtitleTable.scale, subtitleTable.y+verticalCenter + y*subtitleTable.scale, mh.subttl, "S4SUB", V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_REVERSESUBTRACT|(shadowTrans << V_ALPHASHIFT)|V_PERPLAYER, "center", subtitleTable.scale, 0, "Invert")
-				end
+			for i = 1, 4 do
+				local num = i%2 == 0 and -1 or 1
+				local x = i <= 2 and num or 0
+				local y = i > 2 and num or 0
+				
+				CH.CustomFontString(v, subtitleTable.x + x*subtitleTable.scale, subtitleTable.y+verticalCenter + y*subtitleTable.scale, mh.subttl, "S4SUB", V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_MODULATE|V_PERPLAYER, "center", subtitleTable.scale, 0, "Invert")
 			end
-			*/
 			
 			CH.CustomFontString(v, subtitleTable.x, subtitleTable.y+verticalCenter, mh.subttl, "S4SUB", V_SNAPTOBOTTOM|V_SNAPTOLEFT|V_ADD|(subtitleTable.trans << V_ALPHASHIFT)|V_PERPLAYER, "center", subtitleTable.scale)
 		end
